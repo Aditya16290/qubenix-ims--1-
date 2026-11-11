@@ -1,0 +1,19 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body { @apply bg-ink-50 text-ink-900 font-sans antialiased; }
+  :focus-visible { @apply outline-2 outline-offset-2 outline-volt-500; }
+}
+@layer components {
+  .btn { @apply inline-flex items-center justify-center gap-2 rounded-md px-3.5 py-2 text-sm font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed; }
+  .btn-primary { @apply btn bg-volt-500 text-white hover:bg-volt-600; }
+  .btn-ghost { @apply btn border border-ink-100 bg-white text-ink-800 hover:bg-ink-50; }
+  .btn-danger { @apply btn border border-red-200 bg-white text-red-600 hover:bg-red-50; }
+  .input { @apply w-full rounded-md border border-ink-100 bg-white px-3 py-2 text-sm placeholder:text-ink-300 focus:border-volt-500 focus:outline-none focus:ring-2 focus:ring-volt-100; }
+  .label { @apply mb-1 block text-sm font-semibold text-ink-700; }
+  .panel { @apply rounded-lg border border-ink-100 bg-white; }
+  .th { @apply px-4 py-3 text-left text-sm font-semibold text-ink-500; }
+  .td { @apply px-4 py-3 text-sm; }
+}

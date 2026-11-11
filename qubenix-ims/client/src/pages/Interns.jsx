@@ -32,7 +32,7 @@ function InternForm({ intern, onClose, onSaved }) {
             <select className="input" value={f.status} onChange={set('status')}><option>Active</option><option>Inactive</option></select>
           </Field>
           <Field label={intern ? 'New password (optional)' : 'Login password'}>
-            <input className="input" type="text" minLength={6} placeholder={intern ? 'Leave blank to keep' : 'Leave blank to generate one'} value={f.password} onChange={set('password')} />
+            <input className="input" type="password" autoComplete="new-password" minLength={6} placeholder={intern ? 'Leave blank to keep' : 'Leave blank to generate one'} value={f.password} onChange={set('password')} />
           </Field>
         </div>
         <div className="flex justify-end gap-2 pt-2">
@@ -46,10 +46,11 @@ function InternForm({ intern, onClose, onSaved }) {
 
 function Profile({ id, onClose }) {
   const [data, setData] = useState(null);
-  useEffect(() => { api(`/interns/${id}`).then(setData); }, [id]);
+  const [error, setError] = useState('');
+  useEffect(() => { api(`/interns/${id}`).then(setData).catch((e) => setError(e.message)); }, [id]);
   return (
     <Modal title="Intern profile" onClose={onClose}>
-      {!data ? <p className="text-ink-500">Loading…</p> : (
+      {error ? <ErrorMsg>{error}</ErrorMsg> : !data ? <p className="text-ink-500">Loading…</p> : (
         <div className="space-y-5">
           <div>
             <p className="text-xl font-extrabold">{data.intern.name}</p>

@@ -56,7 +56,7 @@ export default function Tasks() {
     api(`/tasks?${qs}`).then(setTasks).catch((e) => setError(e.message));
   }, [filters]);
   useEffect(load, [load]);
-  useEffect(() => { api('/interns').then(setInterns).catch(() => {}); }, []);
+  useEffect(() => { api('/interns').then(setInterns).catch((e) => setError(e.message)); }, []);
 
   const remove = async (t) => {
     if (!window.confirm(`Delete task “${t.title}”?`)) return;

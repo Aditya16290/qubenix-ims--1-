@@ -16,6 +16,19 @@ export async function api(path, { method = 'GET', body } = {}) {
   return data;
 }
 
-export const fmtDate = (d) =>
-  d ? new Date(d).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) : '-';
-export const toInputDate = (d) => (d ? new Date(d).toISOString().slice(0, 10) : '');
+export const fmtDate = (d) => {
+  if (!d) return '-';
+  const date = /^\d{4}-\d{2}-\d{2}$/.test(d) ? new Date(`${d}T00:00:00`) : new Date(d);
+  return Number.isNaN(date.getTime())
+    ? '-'
+    : date.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
+};
+
+export const toInputDate = (d) => {
+  if (!d) return '';
+  if (/^\d{4}-\d{2}-\d{2}/.test(d)) return d.slice(0, 10);
+  const date = new Date(d);
+  if (Number.isNaN(date.getTime())) return '';
+  const pad = (n) => String(n).padStart(2, '0');
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
+};

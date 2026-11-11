@@ -8,8 +8,12 @@ const router = Router();
 
 // POST /api/auth/login  { email, password, role: 'admin' | 'intern' }
 router.post('/login', async (req, res) => {
-  const { email, password, role = 'admin' } = req.body;
-  if (!email || !password) return res.status(400).json({ message: 'Email and password are required' });
+  const { email, password } = req.body || {};
+  const role = req.body?.role ?? 'admin';
+  if (!['admin', 'intern'].includes(role))
+    return res.status(400).json({ message: 'Role must be admin or intern' });
+  if (typeof email !== 'string' || !email.trim() || typeof password !== 'string' || !password)
+    return res.status(400).json({ message: 'Email and password are required' });
   const isIntern = role === 'intern';
   const user = must(await supabase.from(isIntern ? 'interns' : 'admins')
     .select(isIntern ? 'id,name,email,password,status' : 'id,name,email,password')

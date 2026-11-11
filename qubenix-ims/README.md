@@ -27,7 +27,7 @@ One Vercel project serves both the React app and the API (`/api/*` runs as a ser
 
 ### 2. Create your admin account (run once, from your laptop)
 ```bash
-cd server
+cd qubenix-ims/server
 npm install
 cp .env.example .env
 # fill SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, JWT_SECRET, ADMIN_EMAIL, ADMIN_PASSWORD (10+ chars)
@@ -35,24 +35,22 @@ npm run create-admin
 ```
 Then delete `ADMIN_PASSWORD` from `.env`.
 
-Optional local test first: `npm run dev` in `server/` and `npm run dev` in `client/` (opens on http://localhost:5173).
-`npm run seed:demo` loads fake interns and tasks, but it **wipes all data**, so use it only on a throwaway Supabase project.
+Optional local test first: run `npm run dev` from `qubenix-ims/server/` and `npm run dev` from `qubenix-ims/client/` in separate terminals (opens on http://localhost:5173).
+`npm run seed:demo` from `qubenix-ims/server/` loads fake interns and tasks, but it **wipes all data**, so use it only on a throwaway Supabase project.
 
 ### 3. Push to GitHub
+From the repository root, push the project folder:
 ```bash
-cd qubenix-ims
-git init
-git add .
+git add qubenix-ims/
 git commit -m "Intern Management System"
-git branch -M main
-git remote add origin https://github.com/<your-username>/<repo-name>.git
 git push -u origin main
 ```
+For a new repository, add its GitHub remote once before pushing.
 `.gitignore` already excludes `.env` and `node_modules`. Check `git status` shows no `.env` before you commit.
 
 ### 4. Vercel
 1. vercel.com → **Add New > Project** → import the GitHub repo.
-2. Leave **Root Directory** as the repo root. Framework preset: **Other**. `vercel.json` sets the build.
+2. Set **Root Directory** to `qubenix-ims` (the folder containing this README). Framework preset: **Other**. `vercel.json` sets the build.
 3. Add **Environment Variables**: `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, `JWT_SECRET` (32+ random characters; generate with `node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"`).
 4. Deploy, then open `https://<your-app>.vercel.app/api/health` (should return `{"ok":true}`) and log in with the admin you created.
 
@@ -60,6 +58,7 @@ If you change environment variables later, redeploy for them to apply.
 
 ## Before real use: checklist
 - Use a strong `JWT_SECRET` and a strong admin password. Never commit `.env`.
+- If credentials were ever committed or pushed, rotate the Supabase service-role key, JWT secret, and admin password immediately. Removing them from the current file does not erase them from Git history.
 - The `service_role` key bypasses database security. It must only live in Vercel env vars and your local `server/.env`.
 - Tables have Row Level Security enabled with no policies, so the public Supabase anon key cannot read them.
 - Interns get a random password shown once. There is no self-service "forgot password" or password change yet. Admins can set a new password from the intern edit form.

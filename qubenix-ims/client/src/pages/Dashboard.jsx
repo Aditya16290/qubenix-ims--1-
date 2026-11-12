@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { api, fmtDate } from '../api';
 import { Badge, ErrorMsg, PageHead } from '../components/ui';
@@ -6,7 +6,28 @@ import { Badge, ErrorMsg, PageHead } from '../components/ui';
 export default function Dashboard() {
   const [s, setS] = useState(null);
   const [error, setError] = useState('');
-  useEffect(() => { api('/dashboard/stats').then(setS).catch((e) => setError(e.message)); }, []);
+  const load = useCallback(async () => {
+    try {
+      setS(await api('/dashboard/stats'));
+      setError('');
+    } catch (e) {
+      setError(e.message);
+    }
+  }, []);
+  useEffect(() => {
+    load();
+    const interval = window.setInterval(load, 15000);
+    const refreshWhenVisible = () => {
+      if (document.visibilityState === 'visible') load();
+    };
+    window.addEventListener('focus', load);
+    document.addEventListener('visibilitychange', refreshWhenVisible);
+    return () => {
+      window.clearInterval(interval);
+      window.removeEventListener('focus', load);
+      document.removeEventListener('visibilitychange', refreshWhenVisible);
+    };
+  }, [load]);
   if (error) return <ErrorMsg>{error}</ErrorMsg>;
   if (!s) return <p className="text-ink-500">Loading…</p>;
 

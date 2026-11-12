@@ -66,8 +66,28 @@ export default function Submissions() {
   const [reviewing, setReviewing] = useState(null);
   const [presenting, setPresenting] = useState(null);
   const [error, setError] = useState('');
-  const load = useCallback(() => { api('/tasks?hasSubmission=true').then(setTasks).catch((e) => setError(e.message)); }, []);
-  useEffect(load, [load]);
+  const load = useCallback(async () => {
+    try {
+      setTasks(await api('/tasks?hasSubmission=true'));
+      setError('');
+    } catch (e) {
+      setError(e.message);
+    }
+  }, []);
+  useEffect(() => {
+    load();
+    const interval = window.setInterval(load, 15000);
+    const refreshWhenVisible = () => {
+      if (document.visibilityState === 'visible') load();
+    };
+    window.addEventListener('focus', load);
+    document.addEventListener('visibilitychange', refreshWhenVisible);
+    return () => {
+      window.clearInterval(interval);
+      window.removeEventListener('focus', load);
+      document.removeEventListener('visibilitychange', refreshWhenVisible);
+    };
+  }, [load]);
   useEffect(() => {
     if (!presenting) return;
     const onKey = (e) => e.key === 'Escape' && setPresenting(null);

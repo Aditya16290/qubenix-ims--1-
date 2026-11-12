@@ -1,3 +1,3 @@
-// Vercel serverless entry: every /api/* request is rewritten here (see vercel.json)
+// Vercel serverless entry for the /api endpoint.
 import app from '../server/src/app.js';
 export default app;
